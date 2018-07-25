@@ -1,9 +1,9 @@
 # JVZC
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/1lann/cete)](https://goreportcard.com/report/github.com/ParallelCoinTeam/jvzc)
-[![GoDoc](https://godoc.org/github.com/ParallelCoinTeam/jvzc?status.svg)](https://godoc.org/github.com/ParallelCoinTeam/jvzc)
-[![codecov](https://codecov.io/gh/1lann/cete/branch/master/graph/badge.svg)](https://codecov.io/gh/1lann/cete)
-[![Travis CI](https://travis-ci.org/1lann/cete.svg?branch=master)](https://travis-ci.org/1lann/cete)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ParallelCoinTeam/JVZC)](https://goreportcard.com/report/github.com/ParallelCoinTeam/JVZC)
+[![GoDoc](https://godoc.org/github.com/ParallelCoinTeam/jvzc?status.svg)](https://godoc.org/github.com/ParallelCoinTeam/JVZC)
+[![codecov](https://codecov.io/gh/ParallelCoinTeam/JVZC/branch/master/graph/badge.svg)](https://codecov.io/gh/ParallelCoinTeam/jvzc)
+[![Travis CI](https://travis-ci.org/ParallelCoinTeam/jvzc.svg?branch=master)](https://travis-ci.org/ParallelCoinTeam/jvzc)
 
 >**JVZC**
 >_knowledge_
