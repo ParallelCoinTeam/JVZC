@@ -1,18 +1,18 @@
-# Cete
+# JVZC
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/1lann/cete)](https://goreportcard.com/report/github.com/1lann/cete)
 [![GoDoc](https://godoc.org/github.com/1lann/cete?status.svg)](https://godoc.org/github.com/1lann/cete)
 [![codecov](https://codecov.io/gh/1lann/cete/branch/master/graph/badge.svg)](https://codecov.io/gh/1lann/cete)
 [![Travis CI](https://travis-ci.org/1lann/cete.svg?branch=master)](https://travis-ci.org/1lann/cete)
 
->**Cete**
->_noun_
+>**JVZC**
+>_knowledge_
 >
->A group of badgers.
+>Just a white bunny working for an badger
 
-Cete is an easy-to-use, lightweight, pure Go embedded database built on [Badger](https://github.com/dgraph-io/badger) for use in your Go programs. Unlike most other embedded database toolkits for Go, Cete is schemaless, yet still blazing fast. It's great for cases where you need a fast, on-disk, embedded database. Cete is licensed under the [MIT License](/LICENSE).
+JVZC is is fork of JVZC, made as an wrapper for [Badger](https://github.com/dgraph-io/badger) for use in our Go programs. JVZC is licensed under the [MIT License](/LICENSE).
 
-**Cete is currently in alpha, it is somewhat unstable and NOT recommended for use in production yet. Breaking library changes may be released.**
+**JVZC is currently in alpha, it is somewhat unstable and NOT recommended for use in production yet. Breaking library changes may be released.**
 
 Here's a short example to show how easy it is to use the database:
 
@@ -20,7 +20,7 @@ Here's a short example to show how easy it is to use the database:
 package main
 
 import (
-	"github.com/1lann/cete"
+	"github.com/1lann/jvzc"
 	"fmt"
 )
 
@@ -30,13 +30,13 @@ type Person struct {
 }
 
 func main() {
-	db, _ := cete.Open("./cete_data")
+	db, _ := jvzc.Open("./jvzc_data")
 
 	defer db.Close()
 
 	db.NewTable("people")
-	db.Table("people").Set("ash", Person{
-		Name: "Ash Ketchum",
+	db.Table("people").Set("satoshi", Person{
+		Name: "Satoshi Nakamoto",
 		Age: 10,
 	})
 
@@ -53,7 +53,7 @@ func main() {
 ```
 
 ## Recent breaking changes
-I don't know if anyone uses Cete, but whatever.
+I don't know if anyone uses JVZC, but whatever.
 
 I've recently made some breaking changes to how `Range` works. It's now a more traditional cursor setup that allows for cleaner concise code, similar to `bufio.Scanner`. Here's an example how you use it:
 
@@ -96,9 +96,9 @@ fmt.Println("final error:", r.Error()) // will typically return ErrEndOfRange
 
 ## Documentation and examples
 
-Find documentation on [GoDoc](https://godoc.org/github.com/1lann/cete).
+Find documentation on [GoDoc](https://godoc.org/github.com/1lann/jvzc).
 
-Examples can be found on the [wiki](https://github.com/1lann/cete/wiki).
+Examples can be found on the [wiki](https://github.com/1lann/jvzc/wiki).
 
 ## Todo
 
@@ -107,7 +107,7 @@ Examples can be found on the [wiki](https://github.com/1lann/cete/wiki).
 
 ## Performance [OUT OF DATE]
 
-I've performed some benchmarks comparing Cete to two other pure Go database wrappers, [Storm](https://github.com/asdine/storm) and [BoltHold](https://github.com/timshannon/bolthold). The source code for this benchmark can be found [here](https://github.com/1lann/db-benchmark).
+I've performed some benchmarks comparing JVZC to two other pure Go database wrappers, [Storm](https://github.com/asdine/storm) and [BoltHold](https://github.com/timshannon/bolthold). The source code for this benchmark can be found [here](https://github.com/1lann/db-benchmark).
 
 For this test, Storm was running in batched write modes.
 
@@ -115,14 +115,14 @@ These benchmarks consists of simple sets and gets. However the gets were by seco
 
 ![Cete benchmarks](https://chuie.io/cete.png)
 
-Cete is typically twice as fast as Storm for concurrent operations, and BoltHold was magnitudes slower than either. Cete is actually quite slow when it comes to sequential write operations (and isn't shown here), so it's strongly recommended to write concurrently. Cete also fairs similarly to Storm with sequential reads.
+Cete is typically twice as fast as Storm for concurrent operations, and BoltHold was magnitudes slower than either. JVZC is actually quite slow when it comes to sequential write operations (and isn't shown here), so it's strongly recommended to write concurrently. Cete also fairs similarly to Storm with sequential reads.
 
 ## FAQ
 ### What happens if a document is missing the attribute for an index?
 The index is skipped for that document! The document won't ever appear in the index. This also applies to compound indexes, if any of the queries for the compound index fails/results in nil, the document won't be indexed for that compound index.
 
 ### Are there transactions?
-No, Cete uses Badger v0.8.1, which does not support transactions. Cete itself is meant to be a very simple and basic abstraction layer of Badger.
+No, Cete uses Badger v0.8.1, which does not support transactions. JVZC itself is meant to be a very simple and basic abstraction layer of Badger.
 
 For single document updates (such as incrementing a value), you can use the `Update` method which constantly re-attempts the update until the counter matches, eradicating race conditions. Alternatively you can use the counter yourself and implement the logic to handle unmatched counters.
 
