@@ -10,7 +10,7 @@
 >
 >Just a white bunny working for an badger
 
-JVZC is is fork of JVZC, made as an wrapper for [Badger](https://github.com/dgraph-io/badger) for use in our Go programs. JVZC is licensed under the [MIT License](/LICENSE).
+JVZC is is fork of Cete, made as an wrapper for [Badger](https://github.com/dgraph-io/badger) for use in our Go programs such will be GoPress. JVZC is licensed under the [MIT License](/LICENSE).
 
 **JVZC is currently in alpha, it is somewhat unstable and NOT recommended for use in production yet. Breaking library changes may be released.**
 
