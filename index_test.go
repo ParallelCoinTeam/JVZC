@@ -1,4 +1,4 @@
-package cete
+package jvzc
 
 import (
 	"bytes"
@@ -47,7 +47,7 @@ func TestPostIndex(t *testing.T) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -174,7 +174,7 @@ func TestPreIndex(t *testing.T) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -300,7 +300,7 @@ func TestIndexDrop(t *testing.T) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -453,7 +453,7 @@ func testIndexBetween(t *testing.T, compression bool) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -665,7 +665,7 @@ func TestIndexSet(t *testing.T) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -1069,7 +1069,7 @@ func TestIndexLoading(t *testing.T) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -1174,7 +1174,7 @@ func TestIndexDelete(t *testing.T) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -1232,7 +1232,7 @@ func TestSmallIndex(t *testing.T) {
 		t.Parallel()
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -1270,7 +1270,7 @@ func TestIndexAll(t *testing.T) {
 		t.Parallel()
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)

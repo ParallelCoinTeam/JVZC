@@ -1,4 +1,4 @@
-package cete
+package jvzc
 
 import (
 	"io/ioutil"
@@ -7,7 +7,7 @@ import (
 )
 
 func populateDB(people map[string]Person) (*DB, string) {
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	db, err := Open(dir + "/data")
@@ -74,7 +74,7 @@ func TestBadFiles(t *testing.T) {
 		t.Parallel()
 	}
 
-	file, err := ioutil.TempFile("", "cete_")
+	file, err := ioutil.TempFile("", "jvzc_")
 	fileName := file.Name()
 	file.Close()
 
@@ -87,7 +87,7 @@ func TestBadFiles(t *testing.T) {
 
 	panicNotNil(os.Remove(fileName))
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	db, err := Open(dir + "/data")
@@ -105,7 +105,7 @@ func TestBadFiles(t *testing.T) {
 
 	panicNotNil(os.RemoveAll(dir))
 
-	dir, err = ioutil.TempDir("", "cete_")
+	dir, err = ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	db, err = Open(dir + "/data")

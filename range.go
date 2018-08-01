@@ -1,4 +1,4 @@
-package cete
+package jvzc
 
 import (
 	"errors"
@@ -94,7 +94,7 @@ func (r *Range) All(dst interface{}) error {
 	slicePtr := reflect.ValueOf(dst)
 	if slicePtr.Kind() != reflect.Ptr ||
 		slicePtr.Elem().Kind() != reflect.Slice {
-		return errors.New("cete: dst must be a pointer to a silce")
+		return errors.New("jvzc: dst must be a pointer to a silce")
 	}
 
 	sliceValue := slicePtr.Elem()

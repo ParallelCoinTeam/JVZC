@@ -1,4 +1,4 @@
-package cete
+package jvzc
 
 import (
 	"errors"
@@ -56,7 +56,7 @@ func (d *DB) newKV(names ...Name) (*badger.KV, error) {
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				log.Println("cete: gc panic:", r)
+				log.Println("jvzc: gc panic:", r)
 			}
 		}()
 
@@ -87,7 +87,7 @@ func Open(path string, opts ...badger.Options) (*DB, error) {
 
 	if ex, _ := exists(path); !ex {
 		if err := os.MkdirAll(path, 0744); err != nil {
-			return nil, errors.New("cete: failed to create database: " +
+			return nil, errors.New("jvzc: failed to create database: " +
 				err.Error())
 		}
 
@@ -96,7 +96,7 @@ func Open(path string, opts ...badger.Options) (*DB, error) {
 
 	file, err := os.Open(path + "/config.dat")
 	if err != nil {
-		return nil, errors.New("cete: failed to open database configuration. " +
+		return nil, errors.New("jvzc: failed to open database configuration. " +
 			"If this is new database, please delete the database folder first: " +
 			err.Error())
 	}
@@ -105,7 +105,7 @@ func Open(path string, opts ...badger.Options) (*DB, error) {
 	var config dbConfig
 	err = dec.Decode(&config)
 	if err != nil {
-		return nil, errors.New("cete: failed to read database configuration: " +
+		return nil, errors.New("jvzc: failed to read database configuration: " +
 			err.Error())
 	}
 
@@ -118,7 +118,7 @@ func Open(path string, opts ...badger.Options) (*DB, error) {
 
 			idx.index, err = db.newKV(Name(table.TableName), Name(index.IndexName))
 			if err != nil {
-				return nil, errors.New("cete: failed to open " +
+				return nil, errors.New("jvzc: failed to open " +
 					table.TableName + "/" +
 					index.IndexName + ": " + err.Error())
 			}
@@ -129,7 +129,7 @@ func Open(path string, opts ...badger.Options) (*DB, error) {
 
 		tb.data, err = db.newKV(Name(table.TableName))
 		if err != nil {
-			return nil, errors.New("cete: failed to open " +
+			return nil, errors.New("jvzc: failed to open " +
 				table.TableName + ": " + err.Error())
 		}
 		tb.db = db

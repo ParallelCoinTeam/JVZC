@@ -1,4 +1,4 @@
-package cete
+package jvzc
 
 import (
 	"bytes"
@@ -253,7 +253,7 @@ func (t *Table) updateIndex(key string, old, new []byte) error {
 	for _, removal := range removals {
 		err := t.Index(removal.indexName).deleteFromIndex(removal.indexKey, key)
 		if err != nil {
-			log.Println("cete: error while updating index \""+
+			log.Println("jvzc: error while updating index \""+
 				removal.indexName+"\", index likely corrupt:", err)
 			lastError = err
 		}
@@ -262,7 +262,7 @@ func (t *Table) updateIndex(key string, old, new []byte) error {
 	for _, addition := range additions {
 		err := t.Index(addition.indexName).addToIndex(addition.indexKey, key)
 		if err != nil {
-			log.Println("cete: error while updating index \""+
+			log.Println("jvzc: error while updating index \""+
 				addition.indexName+"\", index likely corrupt:", err)
 			lastError = err
 		}
@@ -282,14 +282,14 @@ func (i *Index) deleteFromIndex(indexKey []byte, key string) error {
 
 		itemValue := getItemValue(&item)
 		if itemValue == nil {
-			log.Println("cete: warning: corrupt index detected:", i.name())
+			log.Println("jvzc: warning: corrupt index detected:", i.name())
 			return nil
 		}
 
 		var list []string
 		err = msgpack.Unmarshal(itemValue, &list)
 		if err != nil {
-			log.Println("cete: warning: corrupt index detected:", i.name())
+			log.Println("jvzc: warning: corrupt index detected:", i.name())
 			return err
 		}
 
@@ -304,7 +304,7 @@ func (i *Index) deleteFromIndex(indexKey []byte, key string) error {
 		}
 
 		if !found {
-			log.Println("cete: warning: corrupt index detected:", i.name())
+			log.Println("jvzc: warning: corrupt index detected:", i.name())
 			return nil
 		}
 
@@ -319,7 +319,7 @@ func (i *Index) deleteFromIndex(indexKey []byte, key string) error {
 
 		data, err := msgpack.Marshal(list)
 		if err != nil {
-			log.Fatal("cete: marshal should never fail: ", err)
+			log.Fatal("jvzc: marshal should never fail: ", err)
 		}
 
 		err = i.index.CompareAndSet(indexKey, data, item.Counter())
@@ -346,7 +346,7 @@ func (i *Index) addToIndex(indexKey []byte, key string) error {
 		if itemValue != nil {
 			err = msgpack.Unmarshal(itemValue, &list)
 			if err != nil {
-				log.Println("cete: warning: corrupt index detected:", i.name())
+				log.Println("jvzc: warning: corrupt index detected:", i.name())
 				return err
 			}
 		}
@@ -362,7 +362,7 @@ func (i *Index) addToIndex(indexKey []byte, key string) error {
 
 		data, err := msgpack.Marshal(list)
 		if err != nil {
-			log.Fatal("cete: marshal should never fail: ", err)
+			log.Fatal("jvzc: marshal should never fail: ", err)
 		}
 
 		if itemValue == nil {
@@ -450,20 +450,20 @@ func (t *Table) Index(index string) *Index {
 func (t *Table) Update(key string, handler interface{}) error {
 	handlerType := reflect.TypeOf(handler)
 	if handlerType == nil || handlerType.Kind() != reflect.Func {
-		return errors.New("cete: handler must be a function")
+		return errors.New("jvzc: handler must be a function")
 	}
 
 	if handlerType.NumIn() != 1 {
-		return errors.New("cete: handler must have 1 input argument")
+		return errors.New("jvzc: handler must have 1 input argument")
 	}
 
 	if handlerType.NumOut() != 2 {
-		return errors.New("cete: handler must have 2 return values")
+		return errors.New("jvzc: handler must have 2 return values")
 	}
 
 	if !handlerType.Out(1).Implements(reflect.TypeOf((*error)(nil)).
 		Elem()) {
-		return errors.New("cete: handler must have error as last return value")
+		return errors.New("jvzc: handler must have error as last return value")
 	}
 
 	for {
@@ -505,7 +505,7 @@ func (t *Table) name() string {
 // reverse the sorting by specifying true to the optional reverse parameter.
 // The bounds are inclusive on both ends.
 //
-// You can use cete.MinValue and cete.MaxValue to specify minimum and maximum
+// You can use jvzc.MinValue and jvzc.MaxValue to specify minimum and maximum
 // bound values.
 func (t *Table) Between(lower interface{}, upper interface{},
 	reverse ...bool) *Range {
@@ -528,7 +528,7 @@ func (t *Table) Between(lower interface{}, upper interface{},
 	_, lowerIsBounds := lower.(Bounds)
 	if (!upperIsString && !upperIsBounds) ||
 		(!lowerIsString && !lowerIsBounds) {
-		log.Println("cete: warning: lower and upper bounds of " +
+		log.Println("jvzc: warning: lower and upper bounds of " +
 			"table.Between must be a string or Bounds. An empty range has " +
 			"been returned instead")
 		return newRange(func() (string, []byte, uint64, error) {
@@ -596,7 +596,7 @@ func (t *Table) CountBetween(lower, upper interface{}) int64 {
 	upperString, isString := upper.(string)
 	_, isBounds := upper.(Bounds)
 	if !isString && !isBounds {
-		log.Println("cete: warning: lower and upper bounds of " +
+		log.Println("jvzc: warning: lower and upper bounds of " +
 			"table.CountBetween must be a string or Bounds. A count of 0 has " +
 			"been returned instead")
 		return 0
@@ -605,7 +605,7 @@ func (t *Table) CountBetween(lower, upper interface{}) int64 {
 	lowerString, isString := lower.(string)
 	_, isBounds = lower.(Bounds)
 	if !isString && !isBounds {
-		log.Println("cete: warning: lower and upper bounds of " +
+		log.Println("jvzc: warning: lower and upper bounds of " +
 			"table.CountBetween must be a string or Bounds. A count of 0 has " +
 			"been returned instead")
 		return 0
@@ -729,7 +729,7 @@ func (t *Table) cToKey(compressed string) string {
 
 	value, found := t.compressedToKey[compressed]
 	if !found {
-		log.Println("cete: warning: failed to decompress non-existent "+
+		log.Println("jvzc: warning: failed to decompress non-existent "+
 			"compressed key:", compressed)
 		log.Println(string(debug.Stack()))
 		return compressed

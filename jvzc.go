@@ -1,4 +1,4 @@
-package cete
+package jvzc
 
 import (
 	"bytes"
@@ -19,12 +19,12 @@ import (
 
 // Common errors that can be returned
 var (
-	ErrAlreadyExists  = errors.New("cete: already exists")
-	ErrNotFound       = errors.New("cete: not found")
-	ErrBadIdentifier  = errors.New("cete: bad identifier")
-	ErrEndOfRange     = errors.New("cete: end of range")
-	ErrCounterChanged = errors.New("cete: counter changed")
-	ErrIndexError     = errors.New("cete: index error")
+	ErrAlreadyExists  = errors.New("jvzc: already exists")
+	ErrNotFound       = errors.New("jvzc: not found")
+	ErrBadIdentifier  = errors.New("jvzc: bad identifier")
+	ErrEndOfRange     = errors.New("jvzc: end of range")
+	ErrCounterChanged = errors.New("jvzc: counter changed")
+	ErrIndexError     = errors.New("jvzc: index error")
 )
 
 // Name represents a table or index identifier.
@@ -127,7 +127,7 @@ func valueToBytes(value interface{}) (b []byte) {
 		return integerToBytes(int64(v))
 	}
 
-	panic(fmt.Sprintf("cete: unsupported value: %v", value))
+	panic(fmt.Sprintf("jvzc: unsupported value: %v", value))
 }
 
 func getItemValue(item *badger.KVItem) []byte {

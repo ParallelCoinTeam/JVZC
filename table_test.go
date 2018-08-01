@@ -1,4 +1,4 @@
-package cete
+package jvzc
 
 import (
 	"io/ioutil"
@@ -48,7 +48,7 @@ func TestTableBetween(t *testing.T) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -307,7 +307,7 @@ func TestTableLoading(t *testing.T) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -405,7 +405,7 @@ func TestTableCounter(t *testing.T) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -481,7 +481,7 @@ func TestTableNaming(t *testing.T) {
 		t.Parallel()
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -540,7 +540,7 @@ func TestInvalidTypes(t *testing.T) {
 		t.Parallel()
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)

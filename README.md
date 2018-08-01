@@ -113,7 +113,7 @@ For this test, Storm was running in batched write modes.
 
 These benchmarks consists of simple sets and gets. However the gets were by secondary index instead of primary index, as is in a lot of real-world cases. If it were all by primary index, it will be more of a performance indicator of the underlying key-value store.
 
-![Cete benchmarks](https://chuie.io/cete.png)
+![Cete benchmarks](https://chuie.io/jvzc.png)
 
 Cete is typically twice as fast as Storm for concurrent operations, and BoltHold was magnitudes slower than either. JVZC is actually quite slow when it comes to sequential write operations (and isn't shown here), so it's strongly recommended to write concurrently. Cete also fairs similarly to Storm with sequential reads.
 

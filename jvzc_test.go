@@ -1,4 +1,4 @@
-package cete
+package jvzc
 
 import (
 	"io/ioutil"
@@ -22,7 +22,7 @@ func TestBasic(t *testing.T) {
 		t.Parallel()
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)

@@ -1,4 +1,4 @@
-package cete
+package jvzc
 
 import (
 	"errors"
@@ -26,7 +26,7 @@ func TestCountingCompressed(t *testing.T) {
 }
 
 func testCounting(t *testing.T, compression bool) {
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -139,7 +139,7 @@ func testCounting(t *testing.T, compression bool) {
 		t.Fatal("count should be 0, but isn't")
 	}
 
-	countError := errors.New("cete testing: count error")
+	countError := errors.New("jvzc testing: count error")
 
 	r := newRange(func() (string, []byte, uint64, error) {
 		return "", nil, 0, countError

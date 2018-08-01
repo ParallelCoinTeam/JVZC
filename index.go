@@ -1,4 +1,4 @@
-package cete
+package jvzc
 
 import (
 	"bytes"
@@ -79,7 +79,7 @@ func (t *Table) NewIndex(name string) error {
 	t.indexes[Name(name)] = idx
 
 	if err = idx.indexValues(name); err != nil {
-		log.Println("cete: error while indexing \""+
+		log.Println("jvzc: error while indexing \""+
 			idx.name()+"\", index likely corrupt:", err)
 		return nil
 	}
@@ -104,7 +104,7 @@ func (i *Index) indexValues(name string) error {
 		for _, result := range results {
 			err = i.addToIndex(valueToBytes(result), key)
 			if err != nil {
-				log.Println("cete: index error for index \""+name+"\":", err)
+				log.Println("jvzc: index error for index \""+name+"\":", err)
 			}
 		}
 
@@ -205,12 +205,12 @@ func (i *Index) getAllValues(indexValue []byte) (*Range, error) {
 	var keys []string
 	err := msgpack.Unmarshal(indexValue, &keys)
 	if err != nil {
-		log.Println("cete: corrupt index \""+i.name()+"\":", err)
+		log.Println("jvzc: corrupt index \""+i.name()+"\":", err)
 		return nil, ErrIndexError
 	}
 
 	if len(keys) == 0 {
-		log.Println("cete: corrupt index \""+i.name()+"\":", err)
+		log.Println("jvzc: corrupt index \""+i.name()+"\":", err)
 		return nil, ErrIndexError
 	}
 
@@ -251,7 +251,7 @@ func (i *Index) getAllValues(indexValue []byte) (*Range, error) {
 // duplicate documents if the same document has multiple unique index values.
 // To remove filter duplicate documents, use `Unique()` on the Range.
 //
-// You can use cete.MinValue and cete.MaxValue to specify minimum and maximum
+// You can use jvzc.MinValue and jvzc.MaxValue to specify minimum and maximum
 // bound values.
 func (i *Index) Between(lower, upper interface{}, reverse ...bool) *Range {
 	if lower == MaxValue || upper == MinValue {

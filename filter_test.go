@@ -1,4 +1,4 @@
-package cete
+package jvzc
 
 import (
 	"errors"
@@ -38,7 +38,7 @@ func TestDo(t *testing.T) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -83,7 +83,7 @@ func TestDo(t *testing.T) {
 	}
 
 	sum = 0
-	testError := errors.New("cete testing: test do")
+	testError := errors.New("jvzc testing: test do")
 
 	err = db.Table("do_testing").All().Do(func(key string, counter uint64, doc Document) error {
 		if key == "ben" {
@@ -144,7 +144,7 @@ func TestFilter(t *testing.T) {
 		},
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -269,7 +269,7 @@ func TestFilter(t *testing.T) {
 		t.Fatal("key should be jason, but isn't")
 	}
 
-	filterError := errors.New("cete testing: filter error")
+	filterError := errors.New("jvzc testing: filter error")
 
 	r = db.Table("filter_testing").All().Filter(func(doc Document) (bool, error) {
 		return false, filterError

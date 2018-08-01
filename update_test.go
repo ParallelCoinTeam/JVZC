@@ -1,4 +1,4 @@
-package cete
+package jvzc
 
 import (
 	"errors"
@@ -17,7 +17,7 @@ func TestConsistency(t *testing.T) {
 		t.Parallel()
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -76,7 +76,7 @@ func TestUpdateErrors(t *testing.T) {
 		t.Parallel()
 	}
 
-	dir, err := ioutil.TempDir("", "cete_")
+	dir, err := ioutil.TempDir("", "jvzc_")
 	panicNotNil(err)
 
 	t.Log("testing directory:", dir)
@@ -98,23 +98,23 @@ func TestUpdateErrors(t *testing.T) {
 	panicNotNil(err)
 
 	err = db.Table("table_update").Update("test", nil)
-	if err.Error() != "cete: handler must be a function" {
+	if err.Error() != "jvzc: handler must be a function" {
 		t.Fatal("incorrect error message")
 	}
 
 	err = db.Table("table_update").Update("test", func() {})
-	if err.Error() != "cete: handler must have 1 input argument" {
+	if err.Error() != "jvzc: handler must have 1 input argument" {
 		t.Fatal("incorrect error message")
 	}
 
 	err = db.Table("table_update").Update("test", func(c Counter) {})
-	if err.Error() != "cete: handler must have 2 return values" {
+	if err.Error() != "jvzc: handler must have 2 return values" {
 		t.Fatal("incorrect error message")
 	}
 
 	err = db.Table("table_update").Update("test",
 		func(c Counter) (error, Counter) { return nil, Counter{} })
-	if err.Error() != "cete: handler must have error as last return value" {
+	if err.Error() != "jvzc: handler must have error as last return value" {
 		t.Fatal("incorrect error message")
 	}
 
@@ -140,7 +140,7 @@ func TestUpdateErrors(t *testing.T) {
 		func(c Counter) (Counter, error) { return c, nil })
 	panicNotNil(err)
 
-	testError := errors.New("cete testing: test error")
+	testError := errors.New("jvzc testing: test error")
 	err = db.Table("table_update").Update("test",
 		func(c Counter) (Counter, error) { return c, testError })
 	if err != testError {
