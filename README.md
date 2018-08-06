@@ -5,7 +5,7 @@
 [![codecov](https://codecov.io/gh/ParallelCoinTeam/JVZC/branch/master/graph/badge.svg)](https://codecov.io/gh/ParallelCoinTeam/jvzc)
 [![Travis CI](https://travis-ci.org/ParallelCoinTeam/jvzc.svg?branch=master)](https://travis-ci.org/ParallelCoinTeam/jvzc)
 
->**JavazacDB**
+>**Javazac**
 >_knowledge_
 >
 >Just a white bunny working for an badger
