@@ -1,18 +1,18 @@
-# JVZC
+# JavazacDB
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/ParallelCoinTeam/JVZC)](https://goreportcard.com/report/github.com/ParallelCoinTeam/JVZC)
 [![GoDoc](https://godoc.org/github.com/ParallelCoinTeam/jvzc?status.svg)](https://godoc.org/github.com/ParallelCoinTeam/JVZC)
 [![codecov](https://codecov.io/gh/ParallelCoinTeam/JVZC/branch/master/graph/badge.svg)](https://codecov.io/gh/ParallelCoinTeam/jvzc)
 [![Travis CI](https://travis-ci.org/ParallelCoinTeam/jvzc.svg?branch=master)](https://travis-ci.org/ParallelCoinTeam/jvzc)
 
->**JVZC**
+>**JavazacDB**
 >_knowledge_
 >
 >Just a white bunny working for an badger
 
 JVZC is is fork of Cete, made as an wrapper for [Badger](https://github.com/dgraph-io/badger) for use in our Go programs such will be GoPress. JVZC is licensed under the [MIT License](/LICENSE).
 
-**JVZC is currently in alpha, it is somewhat unstable and NOT recommended for use in production yet. Breaking library changes may be released.**
+**JavazacDB is currently in alpha, it is somewhat unstable and NOT recommended for use in production yet. Breaking library changes may be released.**
 
 Here's a short example to show how easy it is to use the database:
 
@@ -20,7 +20,7 @@ Here's a short example to show how easy it is to use the database:
 package main
 
 import (
-	"github.com/1lann/jvzc"
+	"github.com/ParallelCoinTeam/javazacdb"
 	"fmt"
 )
 
