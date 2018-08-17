@@ -96,9 +96,9 @@ fmt.Println("final error:", r.Error()) // will typically return ErrEndOfRange
 
 ## Documentation and examples
 
-Find documentation on [GoDoc](https://godoc.org/github.com/1lann/jvzc).
+Find documentation on [GoDoc](https://godoc.org/github.com/parallelcointeam/javazacdb).
 
-Examples can be found on the [wiki](https://github.com/1lann/jvzc/wiki).
+Examples can be found on the [wiki](https://github.com/parallelcointeam/javazacdb/wiki).
 
 ## Todo
 
@@ -107,7 +107,7 @@ Examples can be found on the [wiki](https://github.com/1lann/jvzc/wiki).
 
 ## Performance [OUT OF DATE]
 
-I've performed some benchmarks comparing JVZC to two other pure Go database wrappers, [Storm](https://github.com/asdine/storm) and [BoltHold](https://github.com/timshannon/bolthold). The source code for this benchmark can be found [here](https://github.com/1lann/db-benchmark).
+I've performed some benchmarks comparing JVZC to two other pure Go database wrappers, [Storm](https://github.com/asdine/storm) and [BoltHold](https://github.com/timshannon/bolthold). The source code for this benchmark can be found [here](https://github.com/parallelcointeam/javazacdb/db-benchmark).
 
 For this test, Storm was running in batched write modes.
 
