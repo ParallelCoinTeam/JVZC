@@ -1,9 +1,9 @@
 # JavazacDB
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/ParallelCoinTeam/JVZC)](https://goreportcard.com/report/github.com/ParallelCoinTeam/JVZC)
-[![GoDoc](https://godoc.org/github.com/ParallelCoinTeam/jvzc?status.svg)](https://godoc.org/github.com/ParallelCoinTeam/JVZC)
-[![codecov](https://codecov.io/gh/ParallelCoinTeam/JVZC/branch/master/graph/badge.svg)](https://codecov.io/gh/ParallelCoinTeam/jvzc)
-[![Travis CI](https://travis-ci.org/ParallelCoinTeam/jvzc.svg?branch=master)](https://travis-ci.org/ParallelCoinTeam/jvzc)
+[![Go Report Card](https://goreportcard.com/badge/github.com/parallelcointeam/javazacdb)](https://goreportcard.com/report/github.com/parallelcointeam/javazacdb)
+[![GoDoc](https://godoc.org/github.com/parallelcointeam/jvzc?status.svg)](https://godoc.org/github.com/parallelcointeam/javazacdb)
+[![codecov](https://codecov.io/gh/parallelcointeam/javazacdb/branch/master/graph/badge.svg)](https://codecov.io/gh/parallelcointeam/jvzc)
+[![Travis CI](https://travis-ci.org/parallelcointeam/jvzc.svg?branch=master)](https://travis-ci.org/javazacdb/jvzc)
 
 >**Javazac**
 >_knowledge_
@@ -20,7 +20,7 @@ Here's a short example to show how easy it is to use the database:
 package main
 
 import (
-	"github.com/ParallelCoinTeam/javazacdb"
+	"github.com/parallelcointeam/javazacdb"
 	"fmt"
 )
 
