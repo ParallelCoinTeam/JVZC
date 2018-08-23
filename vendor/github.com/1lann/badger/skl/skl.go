@@ -33,6 +33,7 @@ Key differences:
 package skl
 
 import (
+	"bytes"
 	"math"
 	"math/rand"
 	"sync/atomic"
@@ -50,19 +51,18 @@ const (
 const MaxNodeSize = int(unsafe.Sizeof(node{}))
 
 type node struct {
-	// Multiple parts of the value are encoded as a single uint64 so that it
-	// can be atomically loaded and stored:
-	//   value offset: uint32 (bits 0-31)
-	//   value size  : uint16 (bits 32-47)
-	// 12 bytes are allocated to ensure 8 byte alignment also on 32bit systems.
-	value [12]byte
-
 	// A byte slice is 24 bytes. We are trying to save space here.
 	keyOffset uint32 // Immutable. No need to lock to access key.
 	keySize   uint16 // Immutable. No need to lock to access key.
 
 	// Height of the tower.
 	height uint16
+
+	// Multiple parts of the value are encoded as a single uint64 so that it
+	// can be atomically loaded and stored:
+	//   value offset: uint32 (bits 0-31)
+	//   value size  : uint16 (bits 32-47)
+	value uint64
 
 	// Most nodes do not need to use the full height of the tower, since the
 	// probability of each successive level decreases exponentially. Because
@@ -109,7 +109,7 @@ func newNode(arena *Arena, key []byte, v y.ValueStruct, height int) *node {
 	node.keyOffset = arena.putKey(key)
 	node.keySize = uint16(len(key))
 	node.height = uint16(height)
-	*node.value64BitAlignedPtr() = encodeValue(arena.putVal(v), v.EncodedSize())
+	node.value = encodeValue(arena.putVal(v), uint16(len(v.Value)))
 	return node
 }
 
@@ -135,15 +135,8 @@ func NewSkiplist(arenaSize int64) *Skiplist {
 	}
 }
 
-func (s *node) value64BitAlignedPtr() *uint64 {
-	if uintptr(unsafe.Pointer(&s.value))%8 == 0 {
-		return (*uint64)(unsafe.Pointer(&s.value))
-	}
-	return (*uint64)(unsafe.Pointer(&s.value[4]))
-}
-
 func (s *node) getValueOffset() (uint32, uint16) {
-	value := atomic.LoadUint64(s.value64BitAlignedPtr())
+	value := atomic.LoadUint64(&s.value)
 	return decodeValue(value)
 }
 
@@ -153,8 +146,8 @@ func (s *node) key(arena *Arena) []byte {
 
 func (s *node) setValue(arena *Arena, v y.ValueStruct) {
 	valOffset := arena.putVal(v)
-	value := encodeValue(valOffset, v.EncodedSize())
-	atomic.StoreUint64(s.value64BitAlignedPtr(), value)
+	value := encodeValue(valOffset, uint16(len(v.Value)))
+	atomic.StoreUint64(&s.value, value)
 }
 
 func (s *node) getNextOffset(h int) uint32 {
@@ -169,7 +162,7 @@ func (s *node) casNextOffset(h int, old, val uint32) bool {
 // If n is nil, this is an "end" marker and we return false.
 //func (s *Skiplist) keyIsAfterNode(key []byte, n *node) bool {
 //	y.AssertTrue(n != s.head)
-//	return n != nil && y.CompareKeys(key, n.key) > 0
+//	return n != nil && bytes.Compare(key, n.key) > 0
 //}
 
 func randomHeight() int {
@@ -215,7 +208,7 @@ func (s *Skiplist) findNear(key []byte, less bool, allowEqual bool) (*node, bool
 		}
 
 		nextKey := next.key(s.arena)
-		cmp := y.CompareKeys(key, nextKey)
+		cmp := bytes.Compare(key, nextKey)
 		if cmp > 0 {
 			// x.key < next.key < key. We can continue to move right.
 			x = next
@@ -270,7 +263,7 @@ func (s *Skiplist) findSpliceForLevel(key []byte, before *node, level int) (*nod
 			return before, next
 		}
 		nextKey := next.key(s.arena)
-		cmp := y.CompareKeys(key, nextKey)
+		cmp := bytes.Compare(key, nextKey)
 		if cmp == 0 {
 			// Equality case.
 			return next, next
@@ -378,23 +371,14 @@ func (s *Skiplist) findLast() *node {
 	}
 }
 
-// Get gets the value associated with the key. It returns a valid value if it finds equal or earlier
-// version of the same key.
+// Get gets the value associated with the key.
 func (s *Skiplist) Get(key []byte) y.ValueStruct {
-	n, _ := s.findNear(key, false, true) // findGreaterOrEqual.
-	if n == nil {
+	n, found := s.findNear(key, false, true) // findGreaterOrEqual.
+	if !found {
 		return y.ValueStruct{}
 	}
-
-	nextKey := s.arena.getKey(n.keyOffset, n.keySize)
-	if !y.SameKey(key, nextKey) {
-		return y.ValueStruct{}
-	}
-
 	valOffset, valSize := n.getValueOffset()
-	vs := s.arena.getVal(valOffset, valSize)
-	vs.Version = y.ParseTs(nextKey)
-	return vs
+	return s.arena.getVal(valOffset, valSize)
 }
 
 // NewIterator returns a skiplist iterator.  You have to Close() the iterator.

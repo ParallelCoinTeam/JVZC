@@ -5,7 +5,7 @@
 			"importpath": "github.com/1lann/badger",
 			"repository": "https://github.com/1lann/badger",
 			"vcs": "git",
-			"revision": "c7225883aa76fb3dd4707923c67c64bc1b4631bc",
+			"revision": "68f31e454ccd12dc861a13841675397ce298a3f5",
 			"branch": "HEAD",
 			"notests": true
 		},
@@ -37,7 +37,7 @@
 			"importpath": "github.com/coreos/etcd/client",
 			"repository": "https://github.com/coreos/etcd",
 			"vcs": "git",
-			"revision": "bdc333359b618b7519660ead7a4ef30288f8d350",
+			"revision": "a9fcc82e4d8bb79fac0e347ced12043757e52591",
 			"branch": "master",
 			"path": "/client",
 			"notests": true
@@ -46,7 +46,7 @@
 			"importpath": "github.com/coreos/etcd/pkg/pathutil",
 			"repository": "https://github.com/coreos/etcd",
 			"vcs": "git",
-			"revision": "bdc333359b618b7519660ead7a4ef30288f8d350",
+			"revision": "a9fcc82e4d8bb79fac0e347ced12043757e52591",
 			"branch": "master",
 			"path": "pkg/pathutil",
 			"notests": true
@@ -55,7 +55,7 @@
 			"importpath": "github.com/coreos/etcd/pkg/srv",
 			"repository": "https://github.com/coreos/etcd",
 			"vcs": "git",
-			"revision": "bdc333359b618b7519660ead7a4ef30288f8d350",
+			"revision": "a9fcc82e4d8bb79fac0e347ced12043757e52591",
 			"branch": "master",
 			"path": "pkg/srv",
 			"notests": true
@@ -64,7 +64,7 @@
 			"importpath": "github.com/coreos/etcd/pkg/types",
 			"repository": "https://github.com/coreos/etcd",
 			"vcs": "git",
-			"revision": "bdc333359b618b7519660ead7a4ef30288f8d350",
+			"revision": "a9fcc82e4d8bb79fac0e347ced12043757e52591",
 			"branch": "master",
 			"path": "pkg/types",
 			"notests": true
@@ -73,7 +73,7 @@
 			"importpath": "github.com/coreos/etcd/vendor/github.com/coreos/go-semver/semver",
 			"repository": "https://github.com/coreos/etcd",
 			"vcs": "git",
-			"revision": "bdc333359b618b7519660ead7a4ef30288f8d350",
+			"revision": "a9fcc82e4d8bb79fac0e347ced12043757e52591",
 			"branch": "master",
 			"path": "vendor/github.com/coreos/go-semver/semver",
 			"notests": true
@@ -82,7 +82,7 @@
 			"importpath": "github.com/coreos/etcd/vendor/github.com/ugorji/go/codec",
 			"repository": "https://github.com/coreos/etcd",
 			"vcs": "git",
-			"revision": "bdc333359b618b7519660ead7a4ef30288f8d350",
+			"revision": "a9fcc82e4d8bb79fac0e347ced12043757e52591",
 			"branch": "master",
 			"path": "vendor/github.com/ugorji/go/codec",
 			"notests": true
@@ -91,7 +91,7 @@
 			"importpath": "github.com/coreos/etcd/version",
 			"repository": "https://github.com/coreos/etcd",
 			"vcs": "git",
-			"revision": "bdc333359b618b7519660ead7a4ef30288f8d350",
+			"revision": "a9fcc82e4d8bb79fac0e347ced12043757e52591",
 			"branch": "master",
 			"path": "version",
 			"notests": true
@@ -380,7 +380,7 @@
 			"vcs": "git",
 			"revision": "614d502a4dac94afa3a6ce146bd1736da82514c6",
 			"branch": "master",
-			"path": "openpgp",
+			"path": "/openpgp",
 			"notests": true
 		},
 		{
