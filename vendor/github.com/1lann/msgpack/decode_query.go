@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/vmihailenco/msgpack/codes"
+	"github.com/1lann/msgpack/codes"
 )
 
 type queryResult struct {
@@ -38,6 +38,29 @@ func (d *Decoder) Query(query string) ([]interface{}, error) {
 		return nil, err
 	}
 	return res.values, nil
+}
+
+// QueryCompressed queries data which has key compression by converting the
+// query to use the compressed keys.
+func (d *Decoder) QueryCompressed(
+	keyToCompressed func(string, ...bool) (string, error),
+	query string) ([]interface{}, error) {
+
+	parts := strings.Split(query, ".")
+	for i, part := range parts {
+		if strings.ContainsAny(part, "*") {
+			continue
+		}
+
+		if value, err := keyToCompressed(part, true); err == nil {
+			parts[i] = value
+		} else {
+			// Key does not exist, no possible results
+			return nil, nil
+		}
+	}
+
+	return d.Query(strings.Join(parts, "."))
 }
 
 func (d *Decoder) query(q *queryResult) error {
@@ -101,7 +124,7 @@ func (d *Decoder) queryMapKey(q *queryResult) error {
 }
 
 func (d *Decoder) queryArrayIndex(q *queryResult) error {
-	n, err := d.DecodeArrayLen()
+	n, err := d.DecodeSliceLen()
 	if err != nil {
 		return err
 	}

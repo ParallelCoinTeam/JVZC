@@ -3,7 +3,7 @@ package msgpack
 import (
 	"reflect"
 
-	"github.com/vmihailenco/msgpack/codes"
+	"github.com/1lann/msgpack/codes"
 )
 
 func encodeStringValue(e *Encoder, v reflect.Value) error {
@@ -79,6 +79,11 @@ func (e *Encoder) EncodeArrayLen(l int) error {
 	return e.write4(codes.Array32, uint32(l))
 }
 
+// Deprecated. Use EncodeArrayLen instead.
+func (e *Encoder) EncodeSliceLen(l int) error {
+	return e.EncodeArrayLen(l)
+}
+
 func (e *Encoder) encodeStringSlice(s []string) error {
 	if s == nil {
 		return e.EncodeNil()
@@ -103,7 +108,7 @@ func encodeSliceValue(e *Encoder, v reflect.Value) error {
 
 func encodeArrayValue(e *Encoder, v reflect.Value) error {
 	l := v.Len()
-	if err := e.EncodeArrayLen(l); err != nil {
+	if err := e.EncodeSliceLen(l); err != nil {
 		return err
 	}
 	for i := 0; i < l; i++ {

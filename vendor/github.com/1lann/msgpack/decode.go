@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/vmihailenco/msgpack/codes"
+	"github.com/1lann/msgpack/codes"
 )
 
 const bytesAllocLimit = 1024 * 1024 // 1mb
@@ -37,27 +37,45 @@ func Unmarshal(data []byte, v ...interface{}) error {
 	return NewDecoder(bytes.NewReader(data)).Decode(v...)
 }
 
+// UnmarshalCompressed decodes the MessagePack-encoded data using the
+// provided key compression map and stores the result in the value pointed to
+// by v.
+func UnmarshalCompressed(compressedToKey func(string) string,
+	data []byte, v ...interface{}) error {
+	dec := NewDecoder(bytes.NewReader(data))
+	dec.compressedToKey = compressedToKey
+	return dec.Decode(v...)
+}
+
 type Decoder struct {
+	DecodeMapFunc func(*Decoder) (interface{}, error)
+
+	compressedToKey func(string) string
+
 	r   bufReader
 	buf []byte
 
 	extLen int
 	rec    []byte // accumulates read data if not nil
-
-	decodeMapFunc func(*Decoder) (interface{}, error)
 }
 
 func NewDecoder(r io.Reader) *Decoder {
 	return &Decoder{
-		decodeMapFunc: decodeMap,
+		DecodeMapFunc: decodeMap,
 
 		r:   newBufReader(r),
 		buf: makeBuffer(),
 	}
 }
 
-func (d *Decoder) SetDecodeMapFunc(fn func(*Decoder) (interface{}, error)) {
-	d.decodeMapFunc = fn
+func NewCompressedDecoder(compressedToKey func(string) string,
+	r io.Reader) *Decoder {
+	return &Decoder{
+		DecodeMapFunc:   decodeMap,
+		compressedToKey: compressedToKey,
+		r:               newBufReader(r),
+		buf:             makeBuffer(),
+	}
 }
 
 func (d *Decoder) Reset(r io.Reader) error {
@@ -195,21 +213,9 @@ func (d *Decoder) DecodeNil() error {
 		return err
 	}
 	if c != codes.Nil {
-		return fmt.Errorf("msgpack: invalid code=%x decoding nil", c)
+		return fmt.Errorf("msgpack: invalid code %x decoding nil", c)
 	}
 	return nil
-}
-
-func (d *Decoder) decodeNilValue(v reflect.Value) error {
-	err := d.DecodeNil()
-	if v.IsNil() {
-		return err
-	}
-	if v.Kind() == reflect.Ptr {
-		v = v.Elem()
-	}
-	v.Set(reflect.Zero(v.Type()))
-	return err
 }
 
 func (d *Decoder) DecodeBool() (bool, error) {
@@ -227,7 +233,7 @@ func (d *Decoder) bool(c byte) (bool, error) {
 	if c == codes.True {
 		return true, nil
 	}
-	return false, fmt.Errorf("msgpack: invalid code=%x decoding bool", c)
+	return false, fmt.Errorf("msgpack: invalid code %x decoding bool", c)
 }
 
 func (d *Decoder) interfaceValue(v reflect.Value) error {
@@ -251,8 +257,8 @@ func (d *Decoder) interfaceValue(v reflect.Value) error {
 // DecodeInterface decodes value into interface. Possible value types are:
 //   - nil,
 //   - bool,
-//   - int8, int16, int32, int64,
-//   - uint8, uint16, uint32, uint64,
+//   - int64 for negative numbers,
+//   - uint64 for positive numbers,
 //   - float32 and float64,
 //   - string,
 //   - slices of any of the above,
@@ -264,7 +270,10 @@ func (d *Decoder) DecodeInterface() (interface{}, error) {
 	}
 
 	if codes.IsFixedNum(c) {
-		return int8(c), nil
+		if int8(c) < 0 {
+			return d.int(c)
+		}
+		return d.uint(c)
 	}
 	if codes.IsFixedMap(c) {
 		d.r.UnreadByte()
@@ -286,22 +295,10 @@ func (d *Decoder) DecodeInterface() (interface{}, error) {
 		return d.float32(c)
 	case codes.Double:
 		return d.float64(c)
-	case codes.Uint8:
-		return d.uint8()
-	case codes.Uint16:
-		return d.uint16()
-	case codes.Uint32:
-		return d.uint32()
-	case codes.Uint64:
-		return d.uint64()
-	case codes.Int8:
-		return d.int8()
-	case codes.Int16:
-		return d.int16()
-	case codes.Int32:
-		return d.int32()
-	case codes.Int64:
-		return d.int64()
+	case codes.Uint8, codes.Uint16, codes.Uint32, codes.Uint64:
+		return d.uint(c)
+	case codes.Int8, codes.Int16, codes.Int32, codes.Int64:
+		return d.int(c)
 	case codes.Bin8, codes.Bin16, codes.Bin32:
 		return d.bytes(c, nil)
 	case codes.Str8, codes.Str16, codes.Str32:
@@ -423,7 +420,7 @@ func readN(r io.Reader, b []byte, n int) ([]byte, error) {
 	}
 	b = b[:cap(b)]
 
-	var pos int
+	pos := 0
 	for len(b) < n {
 		diff := n - len(b)
 		if diff > bytesAllocLimit {

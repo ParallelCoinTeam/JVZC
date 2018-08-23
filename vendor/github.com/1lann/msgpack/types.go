@@ -19,11 +19,10 @@ type decoderFunc func(*Decoder, reflect.Value) error
 var typEncMap = make(map[reflect.Type]encoderFunc)
 var typDecMap = make(map[reflect.Type]decoderFunc)
 
-// Register registers encoder and decoder functions for a value.
-// This is low level API and in most cases you should prefer implementing
-// Marshaler/CustomEncoder and Unmarshaler/CustomDecoder interfaces.
-func Register(value interface{}, enc encoderFunc, dec decoderFunc) {
-	typ := reflect.TypeOf(value)
+// Register registers encoder and decoder functions for a type.
+// In most cases you should prefer implementing CustomEncoder and
+// CustomDecoder interfaces.
+func Register(typ reflect.Type, enc encoderFunc, dec decoderFunc) {
 	if enc != nil {
 		typEncMap[typ] = enc
 	}
@@ -37,8 +36,8 @@ func Register(value interface{}, enc encoderFunc, dec decoderFunc) {
 var structs = newStructCache()
 
 type structCache struct {
-	mu sync.RWMutex
-	m  map[reflect.Type]*fields
+	l sync.RWMutex
+	m map[reflect.Type]*fields
 }
 
 func newStructCache() *structCache {
@@ -48,20 +47,18 @@ func newStructCache() *structCache {
 }
 
 func (m *structCache) Fields(typ reflect.Type) *fields {
-	m.mu.RLock()
+	m.l.RLock()
 	fs, ok := m.m[typ]
-	m.mu.RUnlock()
-	if ok {
-		return fs
-	}
-
-	m.mu.Lock()
-	fs, ok = m.m[typ]
+	m.l.RUnlock()
 	if !ok {
-		fs = getFields(typ)
-		m.m[typ] = fs
+		m.l.Lock()
+		fs, ok = m.m[typ]
+		if !ok {
+			fs = getFields(typ)
+			m.m[typ] = fs
+		}
+		m.l.Unlock()
 	}
-	m.mu.Unlock()
 
 	return fs
 }
@@ -144,7 +141,7 @@ func getFields(typ reflect.Type) *fields {
 	for i := 0; i < numField; i++ {
 		f := typ.Field(i)
 
-		name, opt := parseTag(f.Tag.Get("msgpack"))
+		name, opt := parseTag(f.Tag.Get("cete"))
 		if name == "-" {
 			continue
 		}
@@ -162,59 +159,40 @@ func getFields(typ reflect.Type) *fields {
 			continue
 		}
 
+		if opt.Contains("inline") {
+			inlineFields(fs, f)
+			continue
+		}
+
 		if name == "" {
 			name = f.Name
 		}
-		field := &field{
+		field := field{
 			name:      name,
 			index:     f.Index,
 			omitEmpty: omitEmpty || opt.Contains("omitempty"),
 			encoder:   getEncoder(f.Type),
 			decoder:   getDecoder(f.Type),
 		}
-
-		if f.Anonymous && inlineFields(fs, f.Type, field) {
-			continue
-		}
-
-		fs.Add(field)
+		fs.Add(&field)
 	}
 	return fs
 }
 
-var encodeStructValuePtr uintptr
-var decodeStructValuePtr uintptr
-
-func init() {
-	encodeStructValuePtr = reflect.ValueOf(encodeStructValue).Pointer()
-	decodeStructValuePtr = reflect.ValueOf(decodeStructValue).Pointer()
-}
-
-func inlineFields(fs *fields, typ reflect.Type, f *field) bool {
+func inlineFields(fs *fields, f reflect.StructField) {
+	typ := f.Type
 	if typ.Kind() == reflect.Ptr {
 		typ = typ.Elem()
 	}
-	if typ.Kind() != reflect.Struct {
-		return false
-	}
-
-	if reflect.ValueOf(f.encoder).Pointer() != encodeStructValuePtr {
-		return false
-	}
-	if reflect.ValueOf(f.decoder).Pointer() != decodeStructValuePtr {
-		return false
-	}
-
 	inlinedFields := getFields(typ).List
 	for _, field := range inlinedFields {
 		if _, ok := fs.Table[field.name]; ok {
 			// Don't overwrite shadowed fields.
 			continue
 		}
-		field.index = append(f.index, field.index...)
+		field.index = append(f.Index, field.index...)
 		fs.Add(field)
 	}
-	return true
 }
 
 func isEmptyValue(v reflect.Value) bool {

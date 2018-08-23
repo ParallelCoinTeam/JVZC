@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/vmihailenco/msgpack/codes"
+	"github.com/1lann/msgpack/codes"
 )
 
 var interfaceType = reflect.TypeOf((*interface{})(nil)).Elem()
@@ -150,7 +150,8 @@ func decodeCustomValue(d *Decoder, v reflect.Value) error {
 	}
 
 	if c == codes.Nil {
-		return d.decodeNilValue(v)
+		// TODO: set nil
+		return d.DecodeNil()
 	}
 
 	if v.IsNil() {
@@ -198,7 +199,8 @@ func unmarshalValue(d *Decoder, v reflect.Value) error {
 	}
 
 	if c == codes.Nil {
-		return d.decodeNilValue(v)
+		// TODO: set nil
+		return d.DecodeNil()
 	}
 
 	if v.IsNil() {

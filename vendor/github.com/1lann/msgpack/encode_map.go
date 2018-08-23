@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"sort"
 
-	"github.com/vmihailenco/msgpack/codes"
+	"github.com/1lann/msgpack/codes"
 )
 
 func encodeMapValue(e *Encoder, v reflect.Value) error {
@@ -16,8 +16,22 @@ func encodeMapValue(e *Encoder, v reflect.Value) error {
 		return err
 	}
 
+	compressed := e.keysToCompressed != nil
+
+	var useKey reflect.Value
 	for _, key := range v.MapKeys() {
-		if err := e.EncodeValue(key); err != nil {
+		useKey = key
+		if compressed {
+			k, ok := key.Interface().(string)
+			if ok {
+				keyValue, err := e.keysToCompressed(k)
+				if err != nil {
+					return err
+				}
+				useKey = reflect.ValueOf(keyValue)
+			}
+		}
+		if err := e.EncodeValue(useKey); err != nil {
 			return err
 		}
 		if err := e.EncodeValue(v.MapIndex(key)); err != nil {
@@ -38,14 +52,25 @@ func encodeMapStringStringValue(e *Encoder, v reflect.Value) error {
 	}
 
 	m := v.Convert(mapStringStringType).Interface().(map[string]string)
-	if e.sortMapKeys {
-		return e.encodeSortedMapStringString(m)
-	}
+	// if e.sortMapKeys {
+	// 	return e.encodeSortedMapStringString(m)
+	// }
 
+	compressed := e.keysToCompressed != nil
+
+	var err error
 	for mk, mv := range m {
+		if compressed {
+			mk, err = e.keysToCompressed(mk)
+			if err != nil {
+				return err
+			}
+		}
+
 		if err := e.EncodeString(mk); err != nil {
 			return err
 		}
+
 		if err := e.EncodeString(mv); err != nil {
 			return err
 		}
@@ -64,11 +89,21 @@ func encodeMapStringInterfaceValue(e *Encoder, v reflect.Value) error {
 	}
 
 	m := v.Convert(mapStringInterfaceType).Interface().(map[string]interface{})
-	if e.sortMapKeys {
-		return e.encodeSortedMapStringInterface(m)
-	}
+	// if e.sortMapKeys {
+	// 	return e.encodeSortedMapStringInterface(m)
+	// }
 
+	compressed := e.keysToCompressed != nil
+
+	var err error
 	for mk, mv := range m {
+		if compressed {
+			mk, err = e.keysToCompressed(mk)
+			if err != nil {
+				return err
+			}
+		}
+
 		if err := e.EncodeString(mk); err != nil {
 			return err
 		}
@@ -141,8 +176,19 @@ func encodeStructValue(e *Encoder, strct reflect.Value) error {
 		return err
 	}
 
+	compressed := e.keysToCompressed != nil
+
+	var err error
 	for _, f := range fields {
-		if err := e.EncodeString(f.name); err != nil {
+		name := f.name
+		if compressed {
+			name, err = e.keysToCompressed(f.name)
+			if err != nil {
+				return err
+			}
+		}
+
+		if err := e.EncodeString(name); err != nil {
 			return err
 		}
 		if err := f.EncodeValue(e, strct); err != nil {

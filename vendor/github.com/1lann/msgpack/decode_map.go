@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/vmihailenco/msgpack/codes"
+	"github.com/1lann/msgpack/codes"
 )
 
 const mapElemsAllocLimit = 1e4
@@ -33,10 +33,18 @@ func decodeMapValue(d *Decoder, v reflect.Value) error {
 	keyType := typ.Key()
 	valueType := typ.Elem()
 
+	compressed := d.compressedToKey != nil
+
 	for i := 0; i < n; i++ {
 		mk := reflect.New(keyType).Elem()
 		if err := d.DecodeValue(mk); err != nil {
 			return err
+		}
+
+		if compressed {
+			if mk.Kind() == reflect.String {
+				mk = reflect.ValueOf(d.compressedToKey(mk.String()))
+			}
 		}
 
 		mv := reflect.New(valueType).Elem()
@@ -59,9 +67,11 @@ func decodeMap(d *Decoder) (interface{}, error) {
 		return nil, nil
 	}
 
-	m := make(map[string]interface{}, min(n, mapElemsAllocLimit))
+	compressed := d.compressedToKey != nil
+
+	m := make(map[interface{}]interface{}, min(n, mapElemsAllocLimit))
 	for i := 0; i < n; i++ {
-		mk, err := d.DecodeString()
+		mk, err := d.DecodeInterface()
 		if err != nil {
 			return nil, err
 		}
@@ -69,6 +79,14 @@ func decodeMap(d *Decoder) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		if compressed {
+			mkStr, ok := mk.(string)
+			if ok {
+				mk = d.compressedToKey(mkStr)
+			}
+		}
+
 		m[mk] = mv
 	}
 	return m, nil
@@ -109,7 +127,7 @@ func (d *Decoder) mapLen(c byte) (int, error) {
 		n, err := d.uint32()
 		return int(n), err
 	}
-	return 0, fmt.Errorf("msgpack: invalid code=%x decoding map length", c)
+	return 0, fmt.Errorf("msgpack: invalid code %x decoding map length", c)
 }
 
 func decodeMapStringStringValue(d *Decoder, v reflect.Value) error {
@@ -133,11 +151,18 @@ func (d *Decoder) decodeMapStringStringPtr(ptr *map[string]string) error {
 		m = *ptr
 	}
 
+	compressed := d.compressedToKey != nil
+
 	for i := 0; i < n; i++ {
 		mk, err := d.DecodeString()
 		if err != nil {
 			return err
 		}
+
+		if compressed {
+			mk = d.compressedToKey(mk)
+		}
+
 		mv, err := d.DecodeString()
 		if err != nil {
 			return err
@@ -169,11 +194,18 @@ func (d *Decoder) decodeMapStringInterfacePtr(ptr *map[string]interface{}) error
 		m = *ptr
 	}
 
+	compressed := d.compressedToKey != nil
+
 	for i := 0; i < n; i++ {
 		mk, err := d.DecodeString()
 		if err != nil {
 			return err
 		}
+
+		if compressed {
+			mk = d.compressedToKey(mk)
+		}
+
 		mv, err := d.DecodeInterface()
 		if err != nil {
 			return err
@@ -185,7 +217,7 @@ func (d *Decoder) decodeMapStringInterfacePtr(ptr *map[string]interface{}) error
 }
 
 func (d *Decoder) DecodeMap() (interface{}, error) {
-	return d.decodeMapFunc(d)
+	return d.DecodeMapFunc(d)
 }
 
 func (d *Decoder) skipMap(c byte) error {
@@ -246,11 +278,18 @@ func decodeStructValue(d *Decoder, strct reflect.Value) error {
 		return nil
 	}
 
+	compressed := d.compressedToKey != nil
+
 	for i := 0; i < n; i++ {
 		name, err := d.DecodeString()
 		if err != nil {
 			return err
 		}
+
+		if compressed {
+			name = d.compressedToKey(name)
+		}
+
 		if f := fields.Table[name]; f != nil {
 			if err := f.DecodeValue(d, strct); err != nil {
 				return err

@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/vmihailenco/msgpack/codes"
+	"github.com/1lann/msgpack/codes"
 )
 
 type writer interface {
@@ -35,12 +35,24 @@ func Marshal(v ...interface{}) ([]byte, error) {
 	return buf.Bytes(), err
 }
 
+// MarshalCompressed returns the MessagePack with key compression encoding of v.
+func MarshalCompressed(keysToCompressed func(string, ...bool) (string, error),
+	v ...interface{}) ([]byte, error) {
+	var buf bytes.Buffer
+	enc := NewEncoder(&buf)
+	enc.keysToCompressed = keysToCompressed
+	err := enc.Encode(v...)
+
+	return buf.Bytes(), err
+}
+
 type Encoder struct {
 	w   writer
 	buf []byte
 
-	sortMapKeys   bool
 	structAsArray bool
+
+	keysToCompressed func(key string, generate ...bool) (string, error)
 }
 
 func NewEncoder(w io.Writer) *Encoder {
@@ -58,10 +70,10 @@ func NewEncoder(w io.Writer) *Encoder {
 // Supported map types are:
 //   - map[string]string
 //   - map[string]interface{}
-func (e *Encoder) SortMapKeys(v bool) *Encoder {
-	e.sortMapKeys = v
-	return e
-}
+// func (e *Encoder) SortMapKeys(v bool) *Encoder {
+// 	e.sortMapKeys = v
+// 	return e
+// }
 
 // StructAsArray causes the Encoder to encode Go structs as MessagePack arrays.
 func (e *Encoder) StructAsArray(v bool) *Encoder {
@@ -87,13 +99,13 @@ func (e *Encoder) encode(v interface{}) error {
 	case []byte:
 		return e.EncodeBytes(v)
 	case int:
-		return e.EncodeInt(int64(v))
+		return e.EncodeInt64(int64(v))
 	case int64:
-		return e.EncodeInt(v)
+		return e.EncodeInt64(v)
 	case uint:
-		return e.EncodeUint(uint64(v))
+		return e.EncodeUint64(uint64(v))
 	case uint64:
-		return e.EncodeUint(v)
+		return e.EncodeUint64(v)
 	case bool:
 		return e.EncodeBool(v)
 	case float32:
@@ -101,7 +113,7 @@ func (e *Encoder) encode(v interface{}) error {
 	case float64:
 		return e.EncodeFloat64(v)
 	case time.Duration:
-		return e.EncodeInt(int64(v))
+		return e.EncodeInt64(int64(v))
 	case time.Time:
 		return e.EncodeTime(v)
 	}
